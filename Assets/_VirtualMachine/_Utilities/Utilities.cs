@@ -81,6 +81,12 @@ namespace VirtualMachine
         {
             return m_Value == other.m_Value;
         }
+
+        public BitSet Combine()
+        {
+            //TODO:SZ
+            return null;
+        }
     }
 }
 
