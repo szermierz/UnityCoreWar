@@ -1,13 +1,20 @@
-﻿using System;
+﻿
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace VirtualMachine
 {
     public static class Utilities
     {
 
+        public static class Math
+        {
+            public static T Pow<T>(T powBase, T powExp)
+            {
+                return (T)(object)UnityEngine.Mathf.Pow((float)(object)powBase, (float)(object)powExp);
+            }
+        }
 
 
     }
@@ -82,10 +89,17 @@ namespace VirtualMachine
             return m_Value == other.m_Value;
         }
 
-        public BitSet Combine()
+        public BitSet Combine(BitSet rhv)
         {
-            //TODO:SZ
-            return null;
+            var result = new BitSet(m_BitsCount + rhv.m_BitsCount);
+            result.m_Value = (m_Value << rhv.m_BitsCount) | rhv.m_Value;
+
+            return result;
+        }
+
+        public void Decompose(params BitSet[] results)
+        {
+            //TODO:SZ - decompose whole bitset into separate bitsets based on their length.
         }
     }
 }

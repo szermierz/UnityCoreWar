@@ -1,15 +1,15 @@
-﻿using System;
+﻿
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace VirtualMachine
 {
-    public class MemoryModel : MonoBehaviour
+    public class MemoryModel
     {
-        public int OpCodeBits;
-        public int AddressTypeBits;
-        public int ValueBits;
+        public readonly int OpCodeBits;
+        public readonly int AddressTypeBits;
+        public readonly int ValueBits;
 
         public int MemoryBitsCount
         {
@@ -19,30 +19,32 @@ namespace VirtualMachine
             }
         }
 
-        protected virtual void Start()
+        public MemoryModel(int _OpCodeBits, int _AddressTypeBits, int _ValueBits)
         {
+            OpCodeBits = _OpCodeBits;
+            AddressTypeBits = _AddressTypeBits;
+            ValueBits = _ValueBits;
+
             InitializeMemory();
         }
 
         protected virtual void InitializeMemory()
         {
-            Memory = new MemoryCell[(int)Mathf.Pow(2, ValueBits)];
-            for(int i = 0; i < Memory.Length; ++i)
-                Memory[i] = new MemoryCell(OpCodeBits, AddressTypeBits, ValueBits);
+            m_Memory = new MemoryCell[Utilities.Math.Pow(2, ValueBits)];
+            for(int i = 0; i < m_Memory.Length; ++i)
+                m_Memory[i] = new MemoryCell(OpCodeBits, AddressTypeBits, ValueBits);
         }
 
-        protected MemoryCell[] Memory;
+        protected MemoryCell[] m_Memory;
 
-        public long this[int memoryIndex]
+        public MemoryCell this[int memoryIndex]
         {
             get
             {
-                //TODO:SZ
-                return 0;
-            }
-            set
-            {
+                if(null == m_Memory)
+                    InitializeMemory();
 
+                return m_Memory[memoryIndex];
             }
         }
     }
