@@ -8,6 +8,7 @@ namespace VirtualMachine
 
     public class Machine
     {
+        public readonly ICompiler Compiler;
         public readonly int OpCodeBits;
         public readonly int AddressTypeBits;
         public readonly int ValueBits;
@@ -16,8 +17,9 @@ namespace VirtualMachine
         protected ProcessQueue m_ProcessQueue;
         protected Dictionary<BitSet, InstructionBase> m_Instructions;
 
-        public Machine(int _OpCodeBits, int _AddressTypeBits, int _ValueBits)
+        public Machine(ICompiler _Compiler, int _OpCodeBits, int _AddressTypeBits, int _ValueBits)
         {
+            Compiler = _Compiler;
             OpCodeBits = _OpCodeBits;
             AddressTypeBits = _AddressTypeBits;
             ValueBits = _ValueBits;

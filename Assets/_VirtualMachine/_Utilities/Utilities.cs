@@ -16,6 +16,26 @@ namespace VirtualMachine
             }
         }
 
+        public static class Reflection
+        {
+            public static T CreateObjectOfType<T>(string typeName)
+            {
+                var objectType = Type.GetType(typeName);
+                if(null == objectType)
+                    return default(T); //TODO - look over assemblies
+
+                var result = Activator.CreateInstance(objectType);
+                
+                try
+                {
+                    return (T)result;
+                }
+                finally
+                { }
+
+                return default(T);
+            }
+        }
 
     }
 
