@@ -10,23 +10,43 @@ namespace VirtualMachine
         {
             public readonly string OpPneumonic;
             public readonly string FirstArgument;
+            public readonly string FirstArgumentAddressType = "$";
             public readonly string SecondArgument;
+            public readonly string SecondArgumentAddressType = "$";
 
             public TextInstruction(string _OpPneumonic, string _FirstArgument, string _SecondArgument)
             {
                 OpPneumonic = _OpPneumonic;
-                FirstArgument = _FirstArgument;
-                SecondArgument = _SecondArgument;
+                
+                if(!Utilities.Math.IsInt(_FirstArgument) && _FirstArgument.Length > 0)
+                {
+                    FirstArgument            = _FirstArgument.Substring(1);
+                    FirstArgumentAddressType = _FirstArgument[0].ToString();
+                }
+                else
+                {
+                    FirstArgument = _FirstArgument;
+                }
+
+                if(!Utilities.Math.IsInt(_SecondArgument) && _SecondArgument.Length > 0)
+                {
+                    SecondArgument            = _SecondArgument.Substring(1);
+                    SecondArgumentAddressType = _SecondArgument[0].ToString();
+                }
+                else
+                {
+                    SecondArgument = _SecondArgument;
+                }
             }
         }
 
-        public override MemoryCell[] Compile(string programText)
+        public override MemoryCell[] Compile(string programText, Machine machine)
         {
             try
             {
                 var parsedProgram = Parse(programText);
-                var preprocessedProgram = Preprocess(parsedProgram);
-                var compiledProgram = Compile(preprocessedProgram);
+                var preprocessedProgram = Preprocess(parsedProgram, machine);
+                var compiledProgram = Compile(preprocessedProgram, machine);
 
                 return compiledProgram;
             }
@@ -44,7 +64,7 @@ namespace VirtualMachine
             return programText.Split(new string[] { "\n" }, System.StringSplitOptions.RemoveEmptyEntries);
         }
 
-        private TextInstruction[] Preprocess(string[] parsedProgram)
+        private TextInstruction[] Preprocess(string[] parsedProgram, Machine machine)
         {
             var result = new TextInstruction[parsedProgram.Length];
 
@@ -83,10 +103,47 @@ namespace VirtualMachine
             return result;
         }
 
-        private MemoryCell[] Compile(TextInstruction[] preprocessedProgram)
+        private MemoryCell[] Compile(TextInstruction[] preprocessedProgram, Machine machine)
         {
+            var instructionsByPneumonic = GatherInstructions(machine);
 
+            var result = new MemoryCell[preprocessedProgram.Length];
+            for(int i = 0; i < preprocessedProgram.Length; ++i)
+            {
+                var programLine = preprocessedProgram[i];
+                if(!instructionsByPneumonic.ContainsKey(programLine.OpPneumonic))
+                    throw new System.Exception("[RedcodeCompiler] No instruction with pneumonic (" + programLine.OpPneumonic + ")");
+
+                var instruction = instructionsByPneumonic[programLine.OpPneumonic];
+
+                var cell = new MemoryCell(machine.OpCodeBits, machine.AddressTypeBits, machine.ValueBits);
+                result[i] = cell;
+
+                cell.OpCode.Int = instruction.GetOpCode().Int;
+                cell.AFieldAddressType = programLine.FirstArgumentAddressType;
+                cell.AFieldValue = programLine.FirstArgument;
+                cell.BFieldAddressType = programLine.SecondArgumentAddressType;
+                cell.BFieldValue = programLine.SecondArgument;
+            }
+
+            return result;
         }
-        
+
+        private Dictionary<string, InstructionBase> GatherInstructions(Machine machine)
+        {
+            var result = new Dictionary<string, InstructionBase>();
+
+            foreach(var instruction in machine.Instructions)
+            {
+                var pneumonic = instruction.GetPneumonic();
+                if(result.ContainsKey(pneumonic))
+                    throw new System.Exception("[RedcodeCompiler] Duplicated instructions pneumonics (" + pneumonic + ")");
+
+                result.Add(pneumonic.ToUpper(), instruction);
+            }
+
+            return result;
+        }
+
     }
 }

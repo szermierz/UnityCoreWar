@@ -10,6 +10,6 @@ namespace VirtualMachine
 
         public ErrorEventDelegate OnCompilerError;
 
-        public abstract MemoryCell[] Compile(string programText);
+        public abstract MemoryCell[] Compile(string programText, Machine machine);
     }
 }

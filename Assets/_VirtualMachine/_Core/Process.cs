@@ -10,42 +10,37 @@ namespace VirtualMachine
     {
         public int InstructionCounter;
 
+        public readonly Machine Machine;
         public readonly ProcessQueue Owner;
+        public readonly MemoryModel Model;
 
-        public Process(ProcessQueue owner, MemoryModel model, int startAddress)
+        public Process(Machine _Machine, ProcessQueue _Owner, MemoryModel _Model, int startAddress)
         {
-            Owner = owner;
+            Machine = _Machine;
+            Owner = _Owner;
+            Model = _Model;
             InstructionCounter = startAddress;
         }
 
-        public ExecutionResult ExecuteStep()
+        public virtual InstructionBase.ExecutionResult ExecuteStep()
         {
-            //TODO:SZ
+            var cell = Model[InstructionCounter];
+            var instruction = Machine.Instructions.GetInstruction(cell.OpCode);
+
+            var result = instruction.Execute(this, Model, InstructionCounter);
+
+            if(result.Success)
+                IncrementInstructionCounter();
+
+            return result;
         }
 
-        public sealed class ExecutionResult
+        public virtual void IncrementInstructionCounter()
         {
-            public enum ResultType
-            {
-                Success,
-                CouldntStart,
-                InvalidOpCode,
-            }
+            ++InstructionCounter;
 
-            public readonly ResultType Type;
-
-            public ExecutionResult(ResultType type)
-            {
-                Type = type;
-            }
-
-            public bool Success
-            {
-                get
-                {
-                    return ResultType.Success == Type;
-                }
-            }
+            if(InstructionCounter >= Model.Size)
+                InstructionCounter = 0;
         }
     }
 

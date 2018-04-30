@@ -7,9 +7,16 @@ namespace VirtualMachine
 {
     public class ProcessQueue
     {
+        public readonly Machine Owner;
+
+        public ProcessQueue(Machine _Owner)
+        {
+            Owner = _Owner;
+        }
+
         public Process SpawnProcess(string queueID, MemoryModel model, int startAddress)
         {
-            var result = new Process(this, model, startAddress);
+            var result = new Process(Owner, this, model, startAddress);
             this[queueID].Enqueue(result);
             return result;
         }
@@ -27,14 +34,14 @@ namespace VirtualMachine
             }
         }
 
-        public virtual Process.ExecutionResult Execute(string queueID)
+        public virtual InstructionBase.ExecutionResult Execute(string queueID)
         {
             if(!m_Processes.ContainsKey(queueID))
-                return new Process.ExecutionResult(Process.ExecutionResult.ResultType.CouldntStart);
+                return new InstructionBase.ExecutionResult(InstructionBase.ExecutionResult.ResultType.CouldntStart);
 
             var queue = this[queueID];
             if(queue.Count == 0)
-                return new Process.ExecutionResult(Process.ExecutionResult.ResultType.CouldntStart);
+                return new InstructionBase.ExecutionResult(InstructionBase.ExecutionResult.ResultType.CouldntStart);
 
             var process = queue.Dequeue();
 

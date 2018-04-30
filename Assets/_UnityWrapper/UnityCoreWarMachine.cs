@@ -54,7 +54,10 @@ public class UnityCoreWarMachine : MonoBehaviour
         {
             var instruction = VirtualMachine.Utilities.Reflection.CreateObjectOfType<VirtualMachine.InstructionBase>(instructionsClassName);
             if(null == instruction)
+            {
+                Debug.LogError("[UnityCoreWarMachine] Couldnt create instruction (" + instructionsClassName + ")!");
                 continue;
+            }
 
             m_Machine.RegisterInstruction(instruction);
         }

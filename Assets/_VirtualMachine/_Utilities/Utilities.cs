@@ -14,6 +14,18 @@ namespace VirtualMachine
             {
                 return (T)(object)UnityEngine.Mathf.Pow((float)(object)powBase, (float)(object)powExp);
             }
+
+            public static bool IsInt(string text)
+            {
+                int dummy;
+                return int.TryParse(text, out dummy);
+            }
+
+            public static bool IsFloat(string text)
+            {
+                float dummy;
+                return float.TryParse(text, out dummy);
+            }
         }
 
         public static class Reflection

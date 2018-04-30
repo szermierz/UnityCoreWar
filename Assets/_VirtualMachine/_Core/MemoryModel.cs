@@ -30,10 +30,12 @@ namespace VirtualMachine
 
         protected virtual void InitializeMemory()
         {
-            m_Memory = new MemoryCell[Utilities.Math.Pow(2, ValueBits)];
+            m_Memory = new MemoryCell[Size];
             for(int i = 0; i < m_Memory.Length; ++i)
                 m_Memory[i] = new MemoryCell(OpCodeBits, AddressTypeBits, ValueBits);
         }
+
+        public int Size { get { return Utilities.Math.Pow(2, ValueBits); } }
 
         protected MemoryCell[] m_Memory;
 
