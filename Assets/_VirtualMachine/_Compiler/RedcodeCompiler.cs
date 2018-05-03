@@ -120,9 +120,19 @@ namespace VirtualMachine
                 result[i] = cell;
 
                 cell.OpCode.Int = instruction.GetOpCode().Int;
-                cell.AFieldAddressType = programLine.FirstArgumentAddressType;
+
+                var aFieldAddressType = AddressTypes.GetAddressTypeOfSymbol(programLine.FirstArgumentAddressType);
+                if(null == aFieldAddressType)
+                    throw new System.Exception("[RedcodeCompiler] No address type for specific symbol (" + programLine.FirstArgumentAddressType + ") in line (" + preprocessedProgram[i] + ")");
+                cell.AFieldAddressType.Int = aFieldAddressType.GetBitCode().Int;
+
                 cell.AFieldValue = programLine.FirstArgument;
-                cell.BFieldAddressType = programLine.SecondArgumentAddressType;
+
+                var bFieldAddressType = AddressTypes.GetAddressTypeOfSymbol(programLine.SecondArgumentAddressType);
+                if(null == bFieldAddressType)
+                    throw new System.Exception("[RedcodeCompiler] No address type for specific symbol (" + programLine.SecondArgumentAddressType + ") in line (" + preprocessedProgram[i] + ")");
+                cell.BFieldAddressType.Int = AddressTypes.GetAddressTypeOfSymbol(programLine.SecondArgumentAddressType).GetBitCode().Int;
+
                 cell.BFieldValue = programLine.SecondArgument;
             }
 
