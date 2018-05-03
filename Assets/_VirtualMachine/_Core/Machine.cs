@@ -44,22 +44,16 @@ namespace VirtualMachine
         }
 
         public readonly ICompiler Compiler;
-        public readonly int OpCodeBits;
-        public readonly int AddressTypeBits;
-        public readonly int ValueBits;
 
         protected MemoryModel m_MemoryModel;
         protected ProcessQueue m_ProcessQueue;
         protected readonly InstructionSet m_Instructions;
 
-        public Machine(ICompiler _Compiler, int _OpCodeBits, int _AddressTypeBits, int _ValueBits)
+        public Machine(ICompiler _Compiler)
         {
             Compiler = _Compiler;
-            OpCodeBits = _OpCodeBits;
-            AddressTypeBits = _AddressTypeBits;
-            ValueBits = _ValueBits;
 
-            m_MemoryModel = new MemoryModel(OpCodeBits, AddressTypeBits, ValueBits);
+            m_MemoryModel = new MemoryModel();
             m_ProcessQueue = new ProcessQueue(this);
             m_Instructions = new InstructionSet();
         }

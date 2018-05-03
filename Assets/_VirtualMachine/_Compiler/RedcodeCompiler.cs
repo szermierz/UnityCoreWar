@@ -116,7 +116,7 @@ namespace VirtualMachine
 
                 var instruction = instructionsByPneumonic[programLine.OpPneumonic];
 
-                var cell = new MemoryCell(machine.OpCodeBits, machine.AddressTypeBits, machine.ValueBits);
+                var cell = new MemoryCell();
                 result[i] = cell;
 
                 cell.OpCode.Int = instruction.GetOpCode().Int;

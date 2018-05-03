@@ -6,21 +6,14 @@ namespace VirtualMachine
 {
     public class MemoryCell
     {
-        public readonly int OpCodeBits;
-        public readonly int AddressTypeBits;
-        public readonly int ValueBits;
         
-        public MemoryCell(int _OpCodeBits, int _AddressTypeBits, int _ValueBits)
+        public MemoryCell()
         {
-            OpCodeBits = _OpCodeBits;
-            AddressTypeBits = _AddressTypeBits;
-            ValueBits = _ValueBits;
-
-            OpCode            = new BitSet(OpCodeBits);
-            AFieldAddressType = new BitSet(AddressTypeBits);
-            AFieldValue       = new BitSet(ValueBits);
-            BFieldAddressType = new BitSet(AddressTypeBits);
-            BFieldValue       = new BitSet(ValueBits);
+            OpCode            = new BitSet(MachineConstants.OpCodeBits);
+            AFieldAddressType = new BitSet(MachineConstants.AddressTypeBits);
+            AFieldValue       = new BitSet(MachineConstants.ValueBits);
+            BFieldAddressType = new BitSet(MachineConstants.AddressTypeBits);
+            BFieldValue       = new BitSet(MachineConstants.ValueBits);
         }
 
         public readonly BitSet OpCode;
