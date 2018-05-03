@@ -40,6 +40,14 @@ namespace VirtualMachine
 
                 return m_Memory[memoryIndex];
             }
+
+            set
+            {
+                if(null == m_Memory)
+                    InitializeMemory();
+
+                m_Memory[memoryIndex] = value;
+            }
         }
     }
 }
