@@ -68,6 +68,39 @@ namespace VirtualMachine
             get { return m_Instructions; }
         }
 
+        /* returns number of compiled cells */
+        public virtual int CompileProgram(string programText, int startIndex, out string errorMessage)
+        {
+            errorMessage = "";
+
+            try
+            {
+                var code = Compiler.Compile(programText, this);
+
+                if(code.Length > m_MemoryModel.Size)
+                {
+                    errorMessage = "[Machine] Compiled program is too big!";
+                    return 0;
+                }
+
+                var cellIndex = startIndex;
+                foreach(var codeCell in code)
+                {
+                    m_MemoryModel[cellIndex++] = codeCell;
+
+                    if(cellIndex >= m_MemoryModel.Size)
+                        cellIndex = 0;
+                }
+
+                return code.Length;
+            }
+            catch(Exception compilerError)
+            {
+                errorMessage = compilerError.Message;
+                return 0;
+            }
+        }
+
     }
 
 }
