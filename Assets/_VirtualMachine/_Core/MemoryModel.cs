@@ -7,7 +7,7 @@ namespace VirtualMachine
 {
     public class MemoryModel
     {
-        public int MemoryBitsCount
+        public static int MemoryBitsCount
         {
             get
             {
@@ -27,7 +27,7 @@ namespace VirtualMachine
                 m_Memory[i] = new MemoryCell();
         }
 
-        public int Size { get { return Utilities.Math.Pow(2, MachineConstants.ValueBits); } }
+        public static int Size { get { return Utilities.Math.Pow(2, MachineConstants.ValueBits); } }
 
         protected MemoryCell[] m_Memory;
 

@@ -69,7 +69,7 @@ namespace VirtualMachine
         }
 
         /* returns number of compiled cells */
-        public virtual int CompileProgram(string programText, int startIndex, out string errorMessage)
+        public virtual MemoryCell[] CompileProgram(string programText, out string errorMessage)
         {
             errorMessage = "";
 
@@ -77,27 +77,30 @@ namespace VirtualMachine
             {
                 var code = Compiler.Compile(programText, this);
 
-                if(code.Length > m_MemoryModel.Size)
+                if(code.Length > MemoryModel.Size)
                 {
                     errorMessage = "[Machine] Compiled program is too big!";
-                    return 0;
+                    return new MemoryCell[0];
                 }
 
-                var cellIndex = startIndex;
-                foreach(var codeCell in code)
-                {
-                    m_MemoryModel[cellIndex++] = codeCell;
-
-                    if(cellIndex >= m_MemoryModel.Size)
-                        cellIndex = 0;
-                }
-
-                return code.Length;
+                return code;
             }
             catch(Exception compilerError)
             {
                 errorMessage = compilerError.Message;
-                return 0;
+                return new MemoryCell[0];
+            }
+        }
+
+        public virtual void LoadProgram(MemoryCell[] program, int startIndex)
+        {
+            var cellIndex = startIndex;
+            foreach(var codeCell in program)
+            {
+                m_MemoryModel[cellIndex++] = codeCell;
+
+                if(cellIndex >= MemoryModel.Size)
+                    cellIndex = 0;
             }
         }
 
