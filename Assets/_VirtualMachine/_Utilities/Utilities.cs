@@ -30,6 +30,25 @@ namespace VirtualMachine
 
         public static class Reflection
         {
+            public static List<Type> GetSubclasses(Type baseClass)
+            {
+                if(null == baseClass)
+                    return null;
+
+                List<Type> result = new List<Type>();
+
+                foreach(var asm in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    foreach(var type in asm.GetTypes())
+                    {
+                        if(type.IsSubclassOf(baseClass))
+                            result.Add(type); ;
+                    }
+                }
+
+                return result;
+            }
+
             public static Type GetTypeOfName(string typeName)
             {
                 foreach(var asm in AppDomain.CurrentDomain.GetAssemblies())
