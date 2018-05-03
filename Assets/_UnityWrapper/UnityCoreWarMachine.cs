@@ -7,13 +7,14 @@ public class UnityCoreWarMachine : MonoBehaviour
 {
     #region Settings
 
-    public int OpCodeBits;
-    public int AddressTypeBits;
-    public int ValueBits;
-
     public string[] InstructionsClassNames;
 
     public string CompilerName;
+
+    public string FirstProgramFilename;
+    public string SecondProgramFilename;
+
+    public int ProgramBytesLengthLimit = 100;
 
     #endregion
 
@@ -28,6 +29,7 @@ public class UnityCoreWarMachine : MonoBehaviour
     protected virtual void Start()
     {
         SetupVirtualMachine();
+        CompilePrograms();
     }
 
     protected virtual void Update()
@@ -48,7 +50,7 @@ public class UnityCoreWarMachine : MonoBehaviour
             return;
         }
 
-        m_Machine = new VirtualMachine.Machine(compiler, OpCodeBits, AddressTypeBits, ValueBits);
+        m_Machine = new VirtualMachine.Machine(compiler);
 
         foreach(var instructionsClassName in InstructionsClassNames)
         {
@@ -61,6 +63,12 @@ public class UnityCoreWarMachine : MonoBehaviour
 
             m_Machine.RegisterInstruction(instruction);
         }
+    }
+
+    private virtual void CompilePrograms()
+    {
+        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, FirstProgramFilename);
+        var result = System.IO.File.ReadAllText(filePath);
     }
 
     #endregion
