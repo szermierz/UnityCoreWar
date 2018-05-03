@@ -32,3 +32,7 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+
+# Custom setup
+*.meta
+!/Assets/_UnityWrapper/UnityCoreWarMachine.cs.meta
