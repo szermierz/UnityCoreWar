@@ -30,7 +30,7 @@ namespace VirtualMachine
 
         public static class Reflection
         {
-            public static List<Type> GetSubclasses(Type baseClass)
+            public static List<Type> GetSubclasses(Type baseClass, bool allowAbstract = true)
             {
                 if(null == baseClass)
                     return null;
@@ -41,8 +41,11 @@ namespace VirtualMachine
                 {
                     foreach(var type in asm.GetTypes())
                     {
+                        if(!allowAbstract && type.IsAbstract)
+                            continue;
+
                         if(type.IsSubclassOf(baseClass))
-                            result.Add(type); ;
+                            result.Add(type);
                     }
                 }
 
