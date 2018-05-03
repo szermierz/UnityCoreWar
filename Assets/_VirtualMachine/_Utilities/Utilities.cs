@@ -10,6 +10,22 @@ namespace VirtualMachine
 
         public static class Math
         {
+            internal static class Random
+            {
+                private static System.Random s_Random;
+
+                public static int Next
+                {
+                    get
+                    {
+                        if(null == s_Random)
+                            s_Random = new System.Random();
+
+                        return s_Random.Next();
+                    }
+                }
+            }
+
             public static T Pow<T>(T powBase, T powExp)
             {
                 return (T)(object)UnityEngine.Mathf.Pow((float)(object)powBase, (float)(object)powExp);
@@ -25,6 +41,18 @@ namespace VirtualMachine
             {
                 float dummy;
                 return float.TryParse(text, out dummy);
+            }
+
+            public static int RandomIntClosed(int min, int max)
+            {
+                int range = max - min + 1;
+                return Random.Next % range + min;
+            }
+
+            public static int RandomIntOpen(int min, int max)
+            {
+                int range = max - min;
+                return Random.Next % range + min;
             }
         }
 
