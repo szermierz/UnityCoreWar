@@ -30,11 +30,25 @@ namespace VirtualMachine
 
         public static class Reflection
         {
+            public static Type GetTypeOfName(string typeName)
+            {
+                foreach(var asm in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    foreach(var type in asm.GetTypes())
+                    {
+                        if(type.Name.Equals(typeName))
+                            return type;
+                    }
+                }
+
+                return null;
+            }
+
             public static T CreateObjectOfType<T>(string typeName)
             {
-                var objectType = Type.GetType(typeName);
+                var objectType = GetTypeOfName(typeName);
                 if(null == objectType)
-                    return default(T); //TODO - look over assemblies
+                    return default(T); 
 
                 var result = Activator.CreateInstance(objectType);
                 
