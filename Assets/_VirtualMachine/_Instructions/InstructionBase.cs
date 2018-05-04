@@ -8,6 +8,9 @@ namespace VirtualMachine
 {
     public abstract class InstructionBase
     {
+
+        #region Result Types
+
         public sealed class ExecutionResult
         {
             public enum ResultType
@@ -33,9 +36,30 @@ namespace VirtualMachine
             }
         }
 
-        public abstract BitSet GetOpCode();
+        #endregion
+
+        #region Interface
+
         public abstract string GetPneumonic();
 
         public abstract ExecutionResult Execute(Process process, MemoryModel model, int address);
+
+        #endregion
+
+        #region OpCode
+
+        public BitSet GetOpCode()
+        {
+            if(null == m_Bits)
+                m_Bits = s_BitCodesDistributor.GenerateFreeBitCode();
+
+            return m_Bits;
+        }
+
+        private BitSet m_Bits;
+        private static BitCodesDistributor s_BitCodesDistributor = new BitCodesDistributor(MachineConstants.OpCodeBits);
+
+        #endregion
+
     }
 }

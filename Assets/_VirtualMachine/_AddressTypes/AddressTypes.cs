@@ -75,11 +75,31 @@ namespace VirtualMachine
 
     public abstract class AddressTypeBase
     {
+
+        #region Interface
+
         public abstract char Symbol { get; }
-        public abstract BitSet GetBitCode();
 
         public abstract int GetAbsoluteIndex(MemoryModel model, int addressValue);
         public abstract int PeekAbsoluteIndex(MemoryModel model, int addressValue);
+
+        #endregion
+
+        #region Bits
+
+        public BitSet GetBitCode()
+        {
+            if(null == m_Bits)
+                m_Bits = s_BitCodesDistributor.GenerateFreeBitCode();
+
+            return m_Bits;
+        }
+
+        private BitSet m_Bits;
+        private static BitCodesDistributor s_BitCodesDistributor = new BitCodesDistributor(MachineConstants.AddressTypeBits);
+
+        #endregion
+
     }
 
 }

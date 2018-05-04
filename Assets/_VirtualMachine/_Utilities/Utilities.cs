@@ -109,10 +109,44 @@ namespace VirtualMachine
                 finally
                 { }
 
-                return default(T);
+                //return default(T);
             }
         }
 
+    }
+
+    public sealed class BitCodesDistributor
+    {
+        public BitCodesDistributor(int bitsCount)
+        {
+            m_Distributor = new BitCodesDistributorImplementation(bitsCount);
+        }
+
+        private class BitCodesDistributorImplementation
+        {
+            public BitCodesDistributorImplementation(int bitsCount)
+            {
+                BitsCount = bitsCount;
+            }
+
+            public readonly int BitsCount;
+
+            private long m_LastGeneratedBitCode = 0;
+
+            public BitSet GenerateFreeBitCode()
+            {
+                var result = new BitSet(BitsCount);
+                result.Int = m_LastGeneratedBitCode++;
+                return result;
+            }
+        }
+
+        private BitCodesDistributorImplementation m_Distributor;
+
+        public BitSet GenerateFreeBitCode()
+        {
+            return m_Distributor.GenerateFreeBitCode();
+        }
     }
 
     public class BitSet : System.ICloneable, System.IComparable<BitSet>, System.IEquatable<BitSet>
