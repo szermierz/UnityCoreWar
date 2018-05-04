@@ -26,9 +26,9 @@ namespace VirtualMachine
                 }
             }
 
-            public static T Pow<T>(T powBase, T powExp)
+            public static int Pow(int powBase, int powExp)
             {
-                return (T)(object)UnityEngine.Mathf.Pow((float)(object)powBase, (float)(object)powExp);
+                return (int)UnityEngine.Mathf.Pow(powBase, powExp);
             }
 
             public static bool IsInt(string text)
