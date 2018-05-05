@@ -23,8 +23,6 @@ namespace VirtualMachine
         protected virtual void InitializeMemory()
         {
             m_Memory = new MemoryCell[Size];
-            for(int i = 0; i < m_Memory.Length; ++i)
-                m_Memory[i] = new MemoryCell();
         }
 
         public static int Size { get { return Utilities.Math.Pow(2, MachineConstants.ValueBits); } }
@@ -37,6 +35,9 @@ namespace VirtualMachine
             {
                 if(null == m_Memory)
                     InitializeMemory();
+
+                if(null == m_Memory[memoryIndex])
+                    m_Memory[memoryIndex] = new MemoryCell();
 
                 return m_Memory[memoryIndex];
             }
