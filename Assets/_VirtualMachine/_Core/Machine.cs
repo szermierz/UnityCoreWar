@@ -10,7 +10,7 @@ namespace VirtualMachine
     {
         public sealed class InstructionSet
         {
-            private Dictionary<BitSet, InstructionBase> m_Instructions;
+            private Dictionary<BitSet, InstructionBase> m_Instructions = new Dictionary<BitSet, InstructionBase>();
 
             public bool RegisterInstruction(InstructionBase instruction)
             {
