@@ -39,7 +39,7 @@ namespace VirtualMachine
         {
             ++InstructionCounter;
 
-            if(InstructionCounter >= Model.Size)
+            if(InstructionCounter >= MemoryModel.Size)
                 InstructionCounter = 0;
         }
     }
