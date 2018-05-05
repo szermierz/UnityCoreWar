@@ -75,6 +75,7 @@ namespace VirtualMachine
 
     public abstract class AddressTypeBase
     {
+        //TODO:SZ - implement program with absolute address loading - move values by program offset
 
         #region Interface
 

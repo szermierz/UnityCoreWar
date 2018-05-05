@@ -91,6 +91,8 @@ public class UnityCoreWarMachine : MonoBehaviour
 
         m_Machine.LoadProgram(program1, randomMemoryPosition1);
         m_Machine.LoadProgram(program2, randomMemoryPosition2);
+
+        //TODO:SZ - create processes
     }
 
     protected virtual VirtualMachine.MemoryCell[] CompileProgram(string fileName)
