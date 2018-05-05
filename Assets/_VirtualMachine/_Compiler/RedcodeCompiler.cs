@@ -8,30 +8,37 @@ namespace VirtualMachine
     {
         private class TextInstruction
         {
-            public readonly string OpPneumonic;
-            public readonly string FirstArgument;
-            public readonly string FirstArgumentAddressType = "$";
-            public readonly string SecondArgument;
-            public readonly string SecondArgumentAddressType = "$";
+            public string OpPneumonic;
+            public string FirstArgument;
+            public string FirstArgumentAddressType = "$";
+            public string SecondArgument;
+            public string SecondArgumentAddressType = "$";
 
             public TextInstruction(string _OpPneumonic, string _FirstArgument, string _SecondArgument)
             {
                 OpPneumonic = _OpPneumonic;
-                
-                if(!Utilities.Math.IsInt(_FirstArgument) && _FirstArgument.Length > 0)
+
+                if(0 == _FirstArgument.Length)
+                    throw new System.Exception("[RedcodeCompiler] Empty instruction argument (" + _OpPneumonic + ")");
+
+                var firstArgumentSymbol = _FirstArgument[0];
+                var firstArgumentAddressType = AddressTypes.GetAddressTypeOfSymbol(firstArgumentSymbol);
+                if(null != firstArgumentAddressType)
                 {
-                    FirstArgument            = _FirstArgument.Substring(1);
-                    FirstArgumentAddressType = _FirstArgument[0].ToString();
+                    FirstArgument = _FirstArgument.Substring(1);
+                    FirstArgumentAddressType = firstArgumentSymbol.ToString();
                 }
                 else
                 {
                     FirstArgument = _FirstArgument;
                 }
 
-                if(!Utilities.Math.IsInt(_SecondArgument) && _SecondArgument.Length > 0)
+                var secondArgumentSymbol = _SecondArgument[0];
+                var secondArgumentAddressType = AddressTypes.GetAddressTypeOfSymbol(secondArgumentSymbol);
+                if(null != secondArgumentAddressType)
                 {
-                    SecondArgument            = _SecondArgument.Substring(1);
-                    SecondArgumentAddressType = _SecondArgument[0].ToString();
+                    SecondArgument = _SecondArgument.Substring(1);
+                    SecondArgumentAddressType = secondArgumentSymbol.ToString();
                 }
                 else
                 {
@@ -70,6 +77,7 @@ namespace VirtualMachine
 
             Dictionary<string, int> labels = new Dictionary<string, int>();
 
+            /* Gather labels definitions */
             for(int i = 0; i < parsedProgram.Length; ++i)
             {
                 var parsedIntoLabels = parsedProgram[i].Split(':');
@@ -83,6 +91,7 @@ namespace VirtualMachine
                 labels.Add(label, i);
             }
 
+            /* Parse lines */
             for(int i = 0; i < parsedProgram.Length; ++i)
             {
                 var lineText = parsedProgram[i];
@@ -91,13 +100,22 @@ namespace VirtualMachine
                 if(labelEndPos >= 0)
                     lineText = lineText.Substring(labelEndPos + 1);
 
-                var instructionArguments = lineText.Split(new char[] { ' ', '\t', ',' }, System.StringSplitOptions.RemoveEmptyEntries);
+                var instructionArguments = lineText.Split(new char[] { ' ', '\t', ',', '\r', '\n' }, System.StringSplitOptions.RemoveEmptyEntries);
                 if(instructionArguments.Length != 3)
                     throw new System.Exception("[RedcodeCompiler] Incorrect arguments count in line (" + parsedProgram[i] + ")");
 
                 //TODO:SZ - diffrent arguments count
-                //TODO:SZ - labels parsing
                 result[i] = new TextInstruction(instructionArguments[0].ToUpper(), instructionArguments[1], instructionArguments[2]);
+            }
+
+            /* Resolve labels */
+            for(int i = 0; i < result.Length; ++i)
+            {
+                if(labels.ContainsKey(result[i].FirstArgument))
+                    result[i].FirstArgument = labels[result[i].FirstArgument].ToString();
+
+                if(labels.ContainsKey(result[i].SecondArgument))
+                    result[i].SecondArgument = labels[result[i].SecondArgument].ToString();
             }
 
             return result;
@@ -126,14 +144,14 @@ namespace VirtualMachine
                     throw new System.Exception("[RedcodeCompiler] No address type for specific symbol (" + programLine.FirstArgumentAddressType + ") in line (" + preprocessedProgram[i] + ")");
                 cell.AFieldAddressType.Int = aFieldAddressType.GetBitCode().Int;
 
-                cell.AFieldValue = programLine.FirstArgument;
+                //cell.AFieldValue = programLine.FirstArgument;
 
                 var bFieldAddressType = AddressTypes.GetAddressTypeOfSymbol(programLine.SecondArgumentAddressType);
                 if(null == bFieldAddressType)
                     throw new System.Exception("[RedcodeCompiler] No address type for specific symbol (" + programLine.SecondArgumentAddressType + ") in line (" + preprocessedProgram[i] + ")");
                 cell.BFieldAddressType.Int = AddressTypes.GetAddressTypeOfSymbol(programLine.SecondArgumentAddressType).GetBitCode().Int;
 
-                cell.BFieldValue = programLine.SecondArgument;
+                //cell.BFieldValue = programLine.SecondArgument;
             }
 
             return result;
