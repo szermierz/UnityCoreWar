@@ -149,14 +149,20 @@ namespace VirtualMachine
                     throw new System.Exception("[RedcodeCompiler] No address type for specific symbol (" + programLine.FirstArgumentAddressType + ") in line (" + preprocessedProgram[i] + ")");
                 cell.AFieldAddressType.Int = aFieldAddressType.GetBitCode().Int;
 
-                //cell.AFieldValue = programLine.FirstArgument;
+                int firstArgumentValue;
+                if(!int.TryParse(programLine.FirstArgument, out firstArgumentValue))
+                    throw new System.Exception("[RedcodeCompiler] Cant resolve first argument of line (" + preprocessedProgram[i] + ")");
+                cell.AFieldValue.Int = firstArgumentValue;
 
                 var bFieldAddressType = AddressTypes.GetAddressTypeOfSymbol(programLine.SecondArgumentAddressType);
                 if(null == bFieldAddressType)
                     throw new System.Exception("[RedcodeCompiler] No address type for specific symbol (" + programLine.SecondArgumentAddressType + ") in line (" + preprocessedProgram[i] + ")");
                 cell.BFieldAddressType.Int = AddressTypes.GetAddressTypeOfSymbol(programLine.SecondArgumentAddressType).GetBitCode().Int;
 
-                //cell.BFieldValue = programLine.SecondArgument;
+                int secondArgumentValue;
+                if(!int.TryParse(programLine.SecondArgument, out secondArgumentValue))
+                    throw new System.Exception("[RedcodeCompiler] Cant resolve second argument of line (" + preprocessedProgram[i] + ")");
+                cell.BFieldValue.Int = secondArgumentValue;
             }
 
             return result;
