@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class UnityCoreWarMachine : MonoBehaviour
@@ -16,6 +17,9 @@ public class UnityCoreWarMachine : MonoBehaviour
 
     public int ProgramBytesLengthLimit = 100;
 
+    public string FirstProgramName = "Player1";
+    public string SecondProgramName = "Player2";
+
     #endregion
 
     #region Fields
@@ -29,7 +33,7 @@ public class UnityCoreWarMachine : MonoBehaviour
     protected virtual void Start()
     {
         SetupVirtualMachine();
-        CompilePrograms();
+        SetupPrograms();
     }
 
     protected virtual void Update()
@@ -50,6 +54,9 @@ public class UnityCoreWarMachine : MonoBehaviour
             return;
         }
 
+        compiler.OnCompilerError -= OnCompilerError;
+        compiler.OnCompilerError += OnCompilerError;
+
         m_Machine = new VirtualMachine.Machine(compiler);
 
         foreach(var instructionsClassName in InstructionsClassNames)
@@ -65,7 +72,7 @@ public class UnityCoreWarMachine : MonoBehaviour
         }
     }
 
-    protected virtual void CompilePrograms()
+    protected virtual void SetupPrograms()
     {
         var program1 = CompileProgram(FirstProgramFilename);
         var program2 = CompileProgram(SecondProgramFilename);
@@ -89,10 +96,20 @@ public class UnityCoreWarMachine : MonoBehaviour
         if(randomMemoryPosition2 + program2.Length > randomMemoryPosition1)
             randomMemoryPosition2 += program1.Length; // Move forward if generated position collides - the position was randomized from a free space
 
-        m_Machine.LoadProgram(program1, randomMemoryPosition1);
-        m_Machine.LoadProgram(program2, randomMemoryPosition2);
+        m_Machine.LoadProgram(program1, randomMemoryPosition1, FirstProgramName);
+        m_Machine.LoadProgram(program2, randomMemoryPosition2, SecondProgramName);
 
-        //TODO:SZ - create processes
+        int startingPlayer = VirtualMachine.Utilities.Math.RandomIntClosed(1, 2);
+        if(1 == startingPlayer)
+        {
+            m_ProcessQueue.Enqueue(FirstProgramName);
+            m_ProcessQueue.Enqueue(SecondProgramName);
+        }
+        else
+        {
+            m_ProcessQueue.Enqueue(SecondProgramName);
+            m_ProcessQueue.Enqueue(FirstProgramName);
+        }
     }
 
     protected virtual VirtualMachine.MemoryCell[] CompileProgram(string fileName)
@@ -100,25 +117,40 @@ public class UnityCoreWarMachine : MonoBehaviour
         string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, FirstProgramFilename);
         var programText = System.IO.File.ReadAllText(filePath);
 
-        string errorMessage;
-        var program = m_Machine.CompileProgram(programText, out errorMessage);
+        var program = m_Machine.CompileProgram(programText);
 
         if(null == program || 0 == program.Length)
-        {
-            Debug.LogError(errorMessage);
             return null;
-        }
 
         return program;
+    }
+
+    protected virtual void OnCompilerError(string errorMessage)
+    {
+        Debug.LogError(errorMessage);
     }
 
     #endregion
 
     #region RunningLogic
 
+    protected Queue<string> m_ProcessQueue = new Queue<string>();
+
     public virtual void ExecuteStep()
     {
-        //TODO:SZ - implement
+        if(!m_ProcessQueue.Any())
+            return;
+
+        string processName = m_ProcessQueue.Dequeue();
+        m_ProcessQueue.Enqueue(processName);
+
+        var result = m_Machine.ExecuteStep(processName);
+
+        if(!result.Success)
+        {
+            m_ProcessQueue.Clear();
+            Debug.Log("Program (" + processName + ") has lost!");
+        }
     }
 
     #endregion
