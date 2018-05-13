@@ -68,31 +68,24 @@ namespace VirtualMachine
             get { return m_Instructions; }
         }
 
-        /* returns number of compiled cells */
-        public virtual MemoryCell[] CompileProgram(string programText, out string errorMessage)
+        public virtual MemoryCell[] CompileProgram(string programText)
         {
-            errorMessage = "";
-
             try
             {
                 var code = Compiler.Compile(programText, this);
 
                 if(code.Length > MemoryModel.Size)
-                {
-                    errorMessage = "[Machine] Compiled program is too big!";
                     return new MemoryCell[0];
-                }
 
                 return code;
             }
-            catch(Exception compilerError)
+            catch(Exception)
             {
-                errorMessage = compilerError.Message;
                 return new MemoryCell[0];
             }
         }
 
-        public virtual void LoadProgram(MemoryCell[] program, int startIndex)
+        public virtual void LoadProgram(MemoryCell[] program, int startIndex, string processGroupID)
         {
             var cellIndex = startIndex;
             foreach(var codeCell in program)
@@ -102,8 +95,14 @@ namespace VirtualMachine
                 if(cellIndex >= MemoryModel.Size)
                     cellIndex = 0;
             }
+
+            m_ProcessQueue.SpawnProcess(processGroupID, m_MemoryModel, startIndex);
         }
 
+        public virtual InstructionBase.ExecutionResult ExecuteStep(string processGroupID)
+        {
+            return m_ProcessQueue.Execute(processGroupID);
+        }
     }
 
 }
