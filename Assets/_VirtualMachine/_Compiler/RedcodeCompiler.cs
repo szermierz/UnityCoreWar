@@ -45,6 +45,11 @@ namespace VirtualMachine
                     SecondArgument = _SecondArgument;
                 }
             }
+
+            public override string ToString()
+            {
+                return OpPneumonic + " " + FirstArgumentAddressType + FirstArgument + " " + SecondArgumentAddressType + SecondArgument;
+            }
         }
 
         public override MemoryCell[] Compile(string programText, Machine machine)
